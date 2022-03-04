@@ -114,6 +114,60 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
+  
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http to client host
+      GroupName: application security group
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 3000
+        ToPort: 3000
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: application security group
+  
+  MyEC2Instance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: "ami-060764be67701a565"
+      KeyName: "testkey"
+      InstanceType: "t2.micro"
+      SecurityGroupIds: 
+      - Ref: InstanceSecurityGroup
+      SubnetId: !Ref PublicSubnet1
+      BlockDeviceMappings: 
+        - DeviceName: "/dev/sda1"
+          Ebs: 
+            VolumeType: "gp2"
+            DeleteOnTermination: "true"
+            VolumeSize: "20"
+        - DeviceName: "/dev/sda1"
+          NoDevice: {}
 
 Outputs:
   VPC:
@@ -130,4 +184,4 @@ Outputs:
 
   PublicSubnet3:
     Description: A reference to the public subnet in the 2nd Availability Zone
-    Value: !Ref PublicSubnet3
+    Value: !Ref PublicSubnet1
