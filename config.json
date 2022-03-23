@@ -1,82 +1,146 @@
 [
-    {
-          "ParameterKey": "VpcCidrBlock",
-            "ParameterValue": "10.0.0.0/16"
-    },
-    {
-          "ParameterKey": "Subnets",
-            "ParameterValue": "6"
-    },
-    {
-          "ParameterKey": "Offset",
-            "ParameterValue": "8"
-    },
-    {
-          "ParameterKey": "PublicCIDR",
-            "ParameterValue": "0.0.0.0/0"
-    },
-    {
-          "ParameterKey": "AMI",
-            "ParameterValue": "ami-007d7fdc37e8ef392"
-    },
-    {
-          "ParameterKey": "Env",
-            "ParameterValue": "dev"
-    },
-    {
-          "ParameterKey": "Tld",
-            "ParameterValue": "polepeddiaravind.me"
-    },
-    {
-          "ParameterKey": "Engine",
-            "ParameterValue": "postgres"
-    },
-    {
-          "ParameterKey": "InstanceClass",
-            "ParameterValue": "db.t2.micro"
-    },
-    {
-          "ParameterKey": "AZDeployment",
-            "ParameterValue": "false"
-    },
-    {
-          "ParameterKey": "InstanceIdentifier",
-            "ParameterValue": "csye6225"
-    },
-    {
-          "ParameterKey": "DBUsername",
-            "ParameterValue": "csye6225_user"
-    },
-    {
-          "ParameterKey": "DBPassword",
-            "ParameterValue": "XyZZySpoon!"
-    },
-    {
-          "ParameterKey": "PublicAccess",
-            "ParameterValue": "false"
-    },
-    {
-          "ParameterKey": "DBName",
-            "ParameterValue": "csye6225"
-    },
-    {
-          "ParameterKey": "Storage",
-            "ParameterValue": "20"
-    },
-    {
-          "ParameterKey": "EngineVersion",
-            "ParameterValue": "12.9"
-    },
-    {
-          "ParameterKey": "Zone",
-            "ParameterValue": "us-east-1a"
-    },
-    {
-          "ParameterKey": "Zone",
-            "ParameterValue": "us-east-1a"
-    },
-    {
-          "ParameterKey": "RetentionPeriod",
-            "ParameterValue": "0"
-    }
-    ]
+  {
+        "ParameterKey": "VpcCidrBlock",
+          "ParameterValue": "10.0.0.0/16"
+  },
+  {
+        "ParameterKey": "Subnets",
+          "ParameterValue": "6"
+  },
+  {
+        "ParameterKey": "Offset",
+          "ParameterValue": "8"
+  },
+  {
+        "ParameterKey": "PublicCIDR",
+          "ParameterValue": "0.0.0.0/0"
+  },
+  {
+        "ParameterKey": "AMI",
+          "ParameterValue": "ami-0a461d96a2b4903d0"
+  },
+  {
+        "ParameterKey": "Env",
+          "ParameterValue": "dev"
+  },
+  {
+        "ParameterKey": "Tld",
+          "ParameterValue": "polepeddiaravind.me"
+  },
+  {
+        "ParameterKey": "Engine",
+          "ParameterValue": "postgres"
+  },
+  {
+        "ParameterKey": "InstanceClass",
+          "ParameterValue": "db.t2.micro"
+  },
+  {
+        "ParameterKey": "AZDeployment",
+          "ParameterValue": "false"
+  },
+  {
+        "ParameterKey": "InstanceIdentifier",
+          "ParameterValue": "csye6225"
+  },
+  {
+        "ParameterKey": "DBUsername",
+          "ParameterValue": "csye6225_user"
+  },
+  {
+        "ParameterKey": "DBPassword",
+          "ParameterValue": "XyZZySpoon!"
+  },
+  {
+        "ParameterKey": "PublicAccess",
+          "ParameterValue": "false"
+  },
+  {
+        "ParameterKey": "DBName",
+          "ParameterValue": "csye6225"
+  },
+  {
+        "ParameterKey": "Storage",
+          "ParameterValue": "20"
+  },
+  {
+        "ParameterKey": "EngineVersion",
+          "ParameterValue": "12.9"
+  },
+  {
+        "ParameterKey": "Zone",
+          "ParameterValue": "us-east-1a"
+  },
+  {
+        "ParameterKey": "Zone",
+          "ParameterValue": "us-east-1a"
+  },
+  {
+        "ParameterKey": "RetentionPeriod",
+          "ParameterValue": "0"
+  },
+  {
+    "ParameterKey": "AppPort",
+      "ParameterValue": "3000"
+  },
+  {
+    "ParameterKey": "LoadEndPoint",
+      "ParameterValue": "/healthz"
+  },
+  {
+    "ParameterKey": "HostedZoneID",
+      "ParameterValue": "Z05390081X2OYO03Q2KWH"
+  },
+  {
+    "ParameterKey": "HostedZone",
+      "ParameterValue": "dev.polepeddiaravind.me"
+  },
+  {
+    "ParameterKey": "HTTPProtocol",
+      "ParameterValue": "HTTP"
+  },
+  {
+    "ParameterKey": "HTTPPort",
+      "ParameterValue": "80"
+  },
+  {
+    "ParameterKey": "MaxSize",
+      "ParameterValue": "5"
+  },
+  {
+    "ParameterKey": "MinSize",
+      "ParameterValue": "3"
+  },
+  {
+    "ParameterKey": "CooldownPeriod",
+      "ParameterValue": "60"
+  },
+  {
+    "ParameterKey": "loadbalanceScheme",
+      "ParameterValue": "internet-facing"
+  },
+  {
+    "ParameterKey": "IpAddressType",
+      "ParameterValue": "ipv4"
+  },
+  {
+    "ParameterKey": "ThresholdCount",
+      "ParameterValue": "2"
+  },
+  {
+    "ParameterKey": "HealthCheckInterval",
+      "ParameterValue": "90"
+  },
+  {
+    "ParameterKey": "BlockDeviceName",
+      "ParameterValue": "/dev/sdp"
+  },
+  {
+    "ParameterKey": "BlockDeviceSize",
+      "ParameterValue": "20"
+  },
+  {
+    "ParameterKey": "BlockDeviceType",
+      "ParameterValue": "gp2"
+  }
+  ]
