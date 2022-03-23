@@ -17,7 +17,7 @@
   },
   {
         "ParameterKey": "AMI",
-          "ParameterValue": "ami-0a461d96a2b4903d0"
+          "ParameterValue": "ami-073f14214cfba4a06"
   },
   {
         "ParameterKey": "Env",
@@ -89,11 +89,11 @@
   },
   {
     "ParameterKey": "HostedZoneID",
-      "ParameterValue": "Z05390081X2OYO03Q2KWH"
+      "ParameterValue": "Z01355421VZY85QDGIYP1"
   },
   {
     "ParameterKey": "HostedZone",
-      "ParameterValue": "dev.polepeddiaravind.me"
+      "ParameterValue": "prod.polepeddiaravind.me"
   },
   {
     "ParameterKey": "HTTPProtocol",
