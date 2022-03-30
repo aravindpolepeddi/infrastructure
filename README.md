@@ -12,7 +12,7 @@ export AWS_PROFILE=dev
 
 export AWS_PROFILE=demo
 
-## aws networking
+## aws cloudformation
 
 aws cloudformation create-stack --stack-name <stack_name> --template-body <path_to_file> --parameters <path_to_file>
 //aws cloudformation create-stack --profile=demo --stack-name thur-vpc2 --template-body file://csye6225-infra.yml --parameters file://config.json
