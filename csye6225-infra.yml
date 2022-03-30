@@ -1,761 +1,872 @@
+ 
 AWSTemplateFormatVersion: '2010-09-09'
 Description: CSYE 6225 IaC Demo
+ 
 # Parameters that can be passed externally
 Parameters:
-VpcCidrBlock:
-  Description: "CIDR block for VPC"
-  Type: "String"
-  Default: "10.0.0.0/16"
-Subnets:
-  Description: "No. of subnets"
-  Type: "String"
-  Default: "3"
-Offset:
-  Description: "No. of offsets"
-  Type: "String"
-  Default: "8"
-PublicCIDR:
-  Description: "Public Cidr"
-  Type: "String"
-  Default: "0.0.0.0/0"
-AMI:
-  Description: "AMI"
-  Type: "String"
-  Default: ""
-Env:
-  Description: "Environment"
-  Type: "String"
-  Default: ""
-Tld:
-  Description: "Top Level Domain"
-  Type: "String"
-  Default: ""
-EngineVersion:
-  Description: "Top Level Domain"
-  Type: "String"
-  Default: ""
+ VpcCidrBlock:
+   Description: "CIDR block for VPC"
+   Type: "String"
+   Default: "10.0.0.0/16"
+ Subnets:
+   Description: "No. of subnets"
+   Type: "String"
+   Default: "3"
+ Offset:
+   Description: "No. of offsets"
+   Type: "String"
+   Default: "8"
+ PublicCIDR:
+   Description: "Public Cidr"
+   Type: "String"
+   Default: "0.0.0.0/0"
+ AMI:
+   Description: "AMI"
+   Type: "String"
+   Default: ""
+ Env:
+   Description: "Environment"
+   Type: "String"
+   Default: ""
+ Tld:
+   Description: "Top Level Domain"
+   Type: "String"
+   Default: ""
+ EngineVersion:
+   Description: "Top Level Domain"
+   Type: "String"
+   Default: ""
+ 
 ## DB params:
-Engine:
-  Description: "Engine"
-  Type: "String"
-  Default: ""
-InstanceClass:
-  Description: "InstanceClass"
-  Type: "String"
-  Default: ""
-AZDeployment:
-  Description: "AZDeployment"
-  Type: "String"
-  Default: ""
-InstanceIdentifier:
-  Description: "InstanceIdentifier"
-  Type: "String"
-  Default: ""
-DBUsername:
-  Description: "DBUsername"
-  Type: "String"
-  Default: ""
-DBPassword:
-  Description: "DBPassword"
-  Type: "String"
-  Default: ""
-PublicAccess:
-  Description: "PublicAccess"
-  Type: "String"
-  Default: ""
-DBName:
-  Description: "DBName"
-  Type: "String"
-  Default: ""
-Storage:
-  Description: "Storage"
-  Type: "String"
-  Default: "100"
-Zone:
-  Description: "Storage"
-  Type: "String"
-  Default: "us-east-1a"
-RetentionPeriod:
-  Description: "Storage"
-  Type: "String"
-  Default: "0"
-AppPort:
-  Description: "AppPort"
-  Type: "String"
-  Default: "3000"
-LoadEndPoint:
-  Description: "LoadEndPoint"
-  Type: "String"
-  Default: "/healthz"
-HostedZone:
-  Description: "HostedZone"
-  Type: "String"
-  Default: ""
-HostedZoneID:
-  Description: "HostedZoneID"
-  Type: "String"
-  Default: ""
-HTTPProtocol:
-  Description: "HTTPProtocol"
-  Type: "String"
-  Default: "HTTP"
-HTTPPort:
-  Description: "HTTPPort"
-  Type: "String"
-  Default: "80"
-MaxSize:
-  Description: "MaxSize"
-  Type: "String"
-  Default: "5"
-MinSize:
-  Description: "MinSize"
-  Type: "String"
-  Default: "3"
-CooldownPeriod:
-  Description: "CooldownPeriod"
-  Type: "String"
-  Default: "60"
-loadbalanceScheme:
-  Description: "loadbalanceScheme"
-  Type: "String"
-  Default: "internet-facing"
-IpAddressType:
-  Description: "IpAddressType"
-  Type: "String"
-  Default: "ipv4"
-ThresholdCount:
-  Description: "ThresholdCount"
-  Type: "String"
-  Default: "2"
-HealthCheckInterval:
-  Description: "HealthCheckInterval"
-  Type: "String"
-  Default: "2"
-BlockDeviceName:
-  Description: "BlockDeviceName"
-  Type: "String"
-  Default: "/dev/sdp"
-BlockDeviceSize:
-  Description: "BlockDeviceSize"
-  Type: "String"
-  Default: "20"
-BlockDeviceType:
-  Description: "BlockDeviceType"
-  Type: "String"
-  Default: "gp2"
+ Engine:
+   Description: "Engine"
+   Type: "String"
+   Default: ""
+ InstanceClass:
+   Description: "InstanceClass"
+   Type: "String"
+   Default: ""
+ AZDeployment:
+   Description: "AZDeployment"
+   Type: "String"
+   Default: ""
+ InstanceIdentifier:
+   Description: "InstanceIdentifier"
+   Type: "String"
+   Default: ""
+ DBUsername:
+   Description: "DBUsername"
+   Type: "String"
+   Default: ""
+ DBPassword:
+   Description: "DBPassword"
+   Type: "String"
+   Default: ""
+ PublicAccess:
+   Description: "PublicAccess"
+   Type: "String"
+   Default: ""
+ DBName:
+   Description: "DBName"
+   Type: "String"
+   Default: ""
+ Storage:
+   Description: "Storage"
+   Type: "String"
+   Default: "100"
+ Zone:
+   Description: "Storage"
+   Type: "String"
+   Default: "us-east-1a"
+ RetentionPeriod:
+   Description: "Storage"
+   Type: "String"
+   Default: "0"
+ 
+ 
+ AppPort:
+   Description: "AppPort"
+   Type: "String"
+   Default: "3000"
+ LoadEndPoint:
+   Description: "LoadEndPoint"
+   Type: "String"
+   Default: "/healthz"
+ HostedZone:
+   Description: "HostedZone"
+   Type: "String"
+   Default: ""
+ HostedZoneID:
+   Description: "HostedZoneID"
+   Type: "String"
+   Default: ""
+ HTTPProtocol:
+   Description: "HTTPProtocol"
+   Type: "String"
+   Default: "HTTP"
+ HTTPPort:
+   Description: "HTTPPort"
+   Type: "String"
+   Default: "80"
+ MaxSize:
+   Description: "MaxSize"
+   Type: "String"
+   Default: "5"
+ MinSize:
+   Description: "MinSize"
+   Type: "String"
+   Default: "3"
+ CooldownPeriod:
+   Description: "CooldownPeriod"
+   Type: "String"
+   Default: "60"
+ loadbalanceScheme:
+   Description: "loadbalanceScheme"
+   Type: "String"
+   Default: "internet-facing"
+ IpAddressType:
+   Description: "IpAddressType"
+   Type: "String"
+   Default: "ipv4"
+ ThresholdCount:
+   Description: "ThresholdCount"
+   Type: "String"
+   Default: "2"
+ HealthCheckInterval:
+   Description: "HealthCheckInterval"
+   Type: "String"
+   Default: "2"
+ BlockDeviceName:
+   Description: "BlockDeviceName"
+   Type: "String"
+   Default: "/dev/sdp"
+ BlockDeviceSize:
+   Description: "BlockDeviceSize"
+   Type: "String"
+   Default: "20"
+ BlockDeviceType:
+   Description: "BlockDeviceType"
+   Type: "String"
+   Default: "gp2"
+ 
 Resources:
+ 
 #####################################
 # VPC configurations                #
 #####################################
-myVPC:
-  Type: 'AWS::EC2::VPC'
-  Properties:
-    CidrBlock: !Ref VpcCidrBlock
-    EnableDnsSupport: 'true'
-    EnableDnsHostnames: 'true'
-    InstanceTenancy: default
-    Tags:
-    - Key: Name
-      Value: !Ref AWS::StackName
+ myVPC:
+   Type: 'AWS::EC2::VPC'
+   Properties:
+     CidrBlock: !Ref VpcCidrBlock
+     EnableDnsSupport: 'true'
+     EnableDnsHostnames: 'true'
+     InstanceTenancy: default
+     Tags:
+     - Key: Name
+       Value: !Ref AWS::StackName
 #####################################
 # Subnet configurations             #
 #####################################
-mySubnet1:
-  Type: 'AWS::EC2::Subnet'
-  Properties:
-    MapPublicIpOnLaunch: true
-    VpcId:
-      Ref: myVPC
-    CidrBlock: !Select [0, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
-    AvailabilityZone: !Select
-                      - 0
-                      - !GetAZs
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PublicSubnet1"]]
-mySubnet2:
-  Type: 'AWS::EC2::Subnet'
-  Properties:
-    VpcId:
-      Ref: myVPC
-    CidrBlock: !Select [1, !Cidr [ !GetAtt myVPC.CidrBlock, !Ref Subnets, !Ref Offset ]]
-    AvailabilityZone: !Select
-                      - 1
-                      - !GetAZs
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PublicSubnet2"]]
-mySubnet3:
-  Type: 'AWS::EC2::Subnet'
-  Properties:
-    VpcId:
-      Ref: myVPC
-    CidrBlock: !Select [2, !Cidr [ !GetAtt myVPC.CidrBlock, !Ref Subnets, !Ref Offset ]]
-    AvailabilityZone: !Select
-                      - 2
-                      - !GetAZs
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PublicSubnet3"]]
+ mySubnet1:
+   Type: 'AWS::EC2::Subnet'
+   Properties:
+     MapPublicIpOnLaunch: true
+     VpcId:
+       Ref: myVPC
+     CidrBlock: !Select [0, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
+     AvailabilityZone: !Select
+                       - 0
+                       - !GetAZs
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PublicSubnet1"]]
+ mySubnet2:
+   Type: 'AWS::EC2::Subnet'
+   Properties:
+     VpcId:
+       Ref: myVPC
+     CidrBlock: !Select [1, !Cidr [ !GetAtt myVPC.CidrBlock, !Ref Subnets, !Ref Offset ]]
+     AvailabilityZone: !Select
+                       - 1
+                       - !GetAZs
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PublicSubnet2"]]
+ mySubnet3:
+   Type: 'AWS::EC2::Subnet'
+   Properties:
+     VpcId:
+       Ref: myVPC
+     CidrBlock: !Select [2, !Cidr [ !GetAtt myVPC.CidrBlock, !Ref Subnets, !Ref Offset ]]
+     AvailabilityZone: !Select
+                       - 2
+                       - !GetAZs
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PublicSubnet3"]]
+ 
 # PRIVATE SUBNETS
-mySubnet4:
-  Type: 'AWS::EC2::Subnet'
-  Properties:
-    MapPublicIpOnLaunch: true
-    VpcId:
-      Ref: myVPC
-    CidrBlock: !Select [3, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
-    AvailabilityZone: "us-east-1a"
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PrivateSubnet1"]]
-mySubnet5:
-  Type: 'AWS::EC2::Subnet'
-  Properties:
-    MapPublicIpOnLaunch: true
-    VpcId:
-      Ref: myVPC
-    CidrBlock: !Select [4, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
-    AvailabilityZone: !Select
-                      - 4
-                      - !GetAZs
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PrivateSubnet2"]]
-mySubnet6:
-  Type: 'AWS::EC2::Subnet'
-  Properties:
-    MapPublicIpOnLaunch: true
-    VpcId:
-      Ref: myVPC
-    CidrBlock: !Select [5, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
-    AvailabilityZone: !Select
-                      - 5
-                      - !GetAZs
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PrivateSubnet3"]]
+ mySubnet4:
+   Type: 'AWS::EC2::Subnet'
+   Properties:
+     MapPublicIpOnLaunch: true
+     VpcId:
+       Ref: myVPC
+     CidrBlock: !Select [3, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
+     AvailabilityZone: "us-east-1a"
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PrivateSubnet1"]]
+ mySubnet5:
+   Type: 'AWS::EC2::Subnet'
+   Properties:
+     MapPublicIpOnLaunch: true
+     VpcId:
+       Ref: myVPC
+     CidrBlock: !Select [4, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
+     AvailabilityZone: !Select
+                       - 4
+                       - !GetAZs
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PrivateSubnet2"]]
+ mySubnet6:
+   Type: 'AWS::EC2::Subnet'
+   Properties:
+     MapPublicIpOnLaunch: true
+     VpcId:
+       Ref: myVPC
+     CidrBlock: !Select [5, !Cidr [ !GetAtt myVPC.CidrBlock,  !Ref Subnets, !Ref Offset]]
+     AvailabilityZone: !Select
+                       - 5
+                       - !GetAZs
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PrivateSubnet3"]]
+ 
 #####################################
 # Internet Gateway configurations   #
 #####################################
-InternetGateway:
-  Type: AWS::EC2::InternetGateway
-  Properties:
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "InternetGateway"]]
- # Gateway attachment to the VPC
-InternetGatewayAttachment:
-  Type: AWS::EC2::VPCGatewayAttachment
-  Properties:
-    InternetGatewayId: !Ref InternetGateway
-    VpcId: !Ref myVPC
-PublicRouteTable:
-  Type: AWS::EC2::RouteTable
-  Properties:
-    VpcId: !Ref myVPC
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PublicRouteTable"]]
+ InternetGateway:
+   Type: AWS::EC2::InternetGateway
+   Properties:
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "InternetGateway"]]
+  # Gateway attachment to the VPC
+ InternetGatewayAttachment:
+   Type: AWS::EC2::VPCGatewayAttachment
+   Properties:
+     InternetGatewayId: !Ref InternetGateway
+     VpcId: !Ref myVPC
+ PublicRouteTable:
+   Type: AWS::EC2::RouteTable
+   Properties:
+     VpcId: !Ref myVPC
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PublicRouteTable"]]
+ 
 # PRIVATE ROUTE TABLE
-PrivateRouteTable:
-  Type: AWS::EC2::RouteTable
-  Properties:
-    VpcId: !Ref myVPC
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "PrivateRouteTable"]]
+ PrivateRouteTable:
+   Type: AWS::EC2::RouteTable
+   Properties:
+     VpcId: !Ref myVPC
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "PrivateRouteTable"]]
 #####################################
 # Route Table-Subnet configurations #
 #####################################
-PublicSubnet1RouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    RouteTableId: !Ref PublicRouteTable
-    SubnetId: !Ref mySubnet1
-PublicSubnet2RouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    RouteTableId: !Ref PublicRouteTable
-    SubnetId: !Ref mySubnet2
-PublicSubnet3RouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    RouteTableId: !Ref PublicRouteTable
-    SubnetId: !Ref mySubnet3
-PrivateSubnet4RouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    RouteTableId: !Ref PrivateRouteTable
-    SubnetId: !Ref mySubnet4
-PrivateSubnet5RouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    RouteTableId: !Ref PrivateRouteTable
-    SubnetId: !Ref mySubnet5
-PrivateSubnet6RouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    RouteTableId: !Ref PrivateRouteTable
-    SubnetId: !Ref mySubnet6
-DefaultPublicRoute:
-  Type: AWS::EC2::Route
-  DependsOn: InternetGatewayAttachment
-  Properties:
-    RouteTableId: !Ref PublicRouteTable
-    DestinationCidrBlock: !Ref PublicCIDR
-    GatewayId: !Ref InternetGateway
-#####################################
+ PublicSubnet1RouteTableAssociation:
+   Type: AWS::EC2::SubnetRouteTableAssociation
+   Properties:
+     RouteTableId: !Ref PublicRouteTable
+     SubnetId: !Ref mySubnet1
+ PublicSubnet2RouteTableAssociation:
+   Type: AWS::EC2::SubnetRouteTableAssociation
+   Properties:
+     RouteTableId: !Ref PublicRouteTable
+     SubnetId: !Ref mySubnet2
+ PublicSubnet3RouteTableAssociation:
+   Type: AWS::EC2::SubnetRouteTableAssociation
+   Properties:
+     RouteTableId: !Ref PublicRouteTable
+     SubnetId: !Ref mySubnet3
+ PrivateSubnet4RouteTableAssociation:
+   Type: AWS::EC2::SubnetRouteTableAssociation
+   Properties:
+     RouteTableId: !Ref PrivateRouteTable
+     SubnetId: !Ref mySubnet4
+ PrivateSubnet5RouteTableAssociation:
+   Type: AWS::EC2::SubnetRouteTableAssociation
+   Properties:
+     RouteTableId: !Ref PrivateRouteTable
+     SubnetId: !Ref mySubnet5
+ PrivateSubnet6RouteTableAssociation:
+   Type: AWS::EC2::SubnetRouteTableAssociation
+   Properties:
+     RouteTableId: !Ref PrivateRouteTable
+     SubnetId: !Ref mySubnet6
+ DefaultPublicRoute:
+   Type: AWS::EC2::Route
+   DependsOn: InternetGatewayAttachment
+   Properties:
+     RouteTableId: !Ref PublicRouteTable
+     DestinationCidrBlock: !Ref PublicCIDR
+     GatewayId: !Ref InternetGateway
+ #####################################
 # Security Group configurations     #
-#####################################        
-InstanceSecurityGroup:
- Type: AWS::EC2::SecurityGroup
- Properties:
-     GroupDescription: Allow http to client host
-     VpcId:
-         Ref: myVPC
-     SecurityGroupIngress:
-     - IpProtocol: tcp
-       FromPort: 22
-       ToPort: 22
-       SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
-     - IpProtocol: tcp
-       FromPort: 80
-       ToPort: 80
-       SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
-     - IpProtocol: tcp
-       FromPort: 443
-       ToPort: 443
-       SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
-     - IpProtocol: tcp
-       FromPort: 3000
-       ToPort: 3000
-       SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
-     SecurityGroupEgress:
-     - IpProtocol: tcp
-       FromPort: 80
-       ToPort: 80
-       CidrIp: 0.0.0.0/0
-     - IpProtocol: tcp
-       FromPort: 5432
-       ToPort: 5432
-       CidrIp: 0.0.0.0/0
-     - IpProtocol: tcp
-       FromPort: 443
-       ToPort: 443
-       CidrIp: 0.0.0.0/0
-     Tags:
-      - Key: Name
-        Value: application
-DatabaseSecurityGroup:
- Type: AWS::EC2::SecurityGroup
- Properties:
-     GroupDescription: Allow http to client host
-     VpcId:
-         Ref: myVPC
-     SecurityGroupIngress:
-     - IpProtocol: tcp
-       FromPort: 5432
-       ToPort: 5432
-       SourceSecurityGroupId: !Ref InstanceSecurityGroup
-     Tags:
-      - Key: Name
-        Value: database
-LoadBalancerSecurityGroup:
- Type: AWS::EC2::SecurityGroup
- Properties:
-     GroupDescription: Security Group for load balancer
-     VpcId:
-         Ref: myVPC
-     SecurityGroupIngress:
-     - IpProtocol: tcp
-       FromPort: 80
-       ToPort: 80
-       CidrIp: 0.0.0.0/0
-     - IpProtocol: tcp
-       FromPort: 443
-       ToPort: 443
-       CidrIp: 0.0.0.0/0
-     SecurityGroupEgress:
-     - IpProtocol: -1
-       FromPort: 0
-       ToPort: 0
-       CidrIp: 0.0.0.0/0
-     Tags:
-      - Key: Name
-        Value: loadbalancer
+#####################################         
+ InstanceSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+      GroupDescription: Allow http to client host
+      VpcId:
+          Ref: myVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+      - IpProtocol: tcp
+        FromPort: 3000
+        ToPort: 3000
+        SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      Tags:
+       - Key: Name
+         Value: application
+ 
+ DatabaseSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+      GroupDescription: Allow http to client host
+      VpcId:
+          Ref: myVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        SourceSecurityGroupId: !Ref InstanceSecurityGroup
+      Tags:
+       - Key: Name
+         Value: database
+ 
+ LoadBalancerSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+      GroupDescription: Security Group for load balancer
+      VpcId:
+          Ref: myVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        FromPort: 0
+        ToPort: 0
+        CidrIp: 0.0.0.0/0
+      Tags:
+       - Key: Name
+         Value: loadbalancer
+ 
 #####################################
 # S3 bucket configurations          #
-#####################################
-S3Bucket:
-  Type: 'AWS::S3::Bucket'
-  Properties:
-    AccessControl: Private
-    BucketName: !Join [".", [!Select [2, !Split ['/', !Ref AWS::StackId]], !Ref Env, !Ref Tld]]
-    PublicAccessBlockConfiguration:
-      BlockPublicAcls: true
-      BlockPublicPolicy: true
-      IgnorePublicAcls: true
-      RestrictPublicBuckets: true
-    BucketEncryption:
-      ServerSideEncryptionConfiguration:
-      - ServerSideEncryptionByDefault:
-          SSEAlgorithm: 'AES256'
-    LifecycleConfiguration:
-      Rules:
-        - Id: LifecycleRule
-          Prefix: mys3rule
-          Status: Enabled
-          Transitions:
-            - TransitionInDays: 30
-              StorageClass: STANDARD_IA
+##################################### 
+ S3Bucket:
+   Type: 'AWS::S3::Bucket'
+   Properties:
+     AccessControl: Private
+     BucketName: !Join [".", [!Select [2, !Split ['/', !Ref AWS::StackId]], !Ref Env, !Ref Tld]]
+     PublicAccessBlockConfiguration:
+       BlockPublicAcls: true
+       BlockPublicPolicy: true
+       IgnorePublicAcls: true
+       RestrictPublicBuckets: true
+     BucketEncryption:
+       ServerSideEncryptionConfiguration:
+       - ServerSideEncryptionByDefault:
+           SSEAlgorithm: 'AES256'
+     LifecycleConfiguration:
+       Rules:
+         - Id: LifecycleRule
+           Prefix: mys3rule
+           Status: Enabled
+           Transitions:
+             - TransitionInDays: 30
+               StorageClass: STANDARD_IA
+ 
 #####################################
 # RDS Parameter group               #
 #####################################
-RDSDBParameterGroup:
-  Type: 'AWS::RDS::DBParameterGroup'
-  Properties:
-    Description: CloudFormation PostgreSQL Parameter Group
-    Parameters:
-      log_statement: "all"
-      log_duration: "on"
-      rds.force_ssl: 0
-    Family: postgres12
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "RDSDBParameterGroup"]]
+ RDSDBParameterGroup:
+   Type: 'AWS::RDS::DBParameterGroup'
+   Properties:
+     Description: CloudFormation PostgreSQL Parameter Group
+     Parameters:
+       log_statement: "all"
+       log_duration: "on"
+       rds.force_ssl: 0
+     Family: postgres12
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "RDSDBParameterGroup"]]
+ 
 #####################################
 # RDS Subnet group                  #
 #####################################
-myDBSubnetGroup:
-  Type: AWS::RDS::DBSubnetGroup
-  Properties:
-    DBSubnetGroupDescription: Subnet group
-    SubnetIds:
-      - !Ref mySubnet4
-      - !Ref mySubnet5
-      - !Ref mySubnet6
-    Tags:
-      - Key: Name
-        Value: !Join ["-", [!Ref AWS::StackName, "DBSubnetGroup"]]
+ myDBSubnetGroup:
+   Type: AWS::RDS::DBSubnetGroup
+   Properties:
+     DBSubnetGroupDescription: Subnet group
+     SubnetIds:
+       - !Ref mySubnet4
+       - !Ref mySubnet5
+       - !Ref mySubnet6
+     Tags:
+       - Key: Name
+         Value: !Join ["-", [!Ref AWS::StackName, "DBSubnetGroup"]]
+ 
 #####################################
 # RDS Instance                      #
 #####################################
-MyDB:
-  Type: 'AWS::RDS::DBInstance'
-  Properties:
-    Engine: !Ref Engine
-    EngineVersion: !Ref EngineVersion
-    DBInstanceClass: !Ref InstanceClass
-    MultiAZ: !Ref AZDeployment
-    DBInstanceIdentifier: !Ref InstanceIdentifier
-    MasterUsername: !Ref DBUsername
-    MasterUserPassword: !Ref DBPassword
-    DBName: !Ref DBName
-    DBSubnetGroupName: !Ref myDBSubnetGroup
-    AllocatedStorage: !Ref Storage
-    DBParameterGroupName: !Ref RDSDBParameterGroup
-    AvailabilityZone: !Ref Zone
-    BackupRetentionPeriod: !Ref RetentionPeriod
-    VPCSecurityGroups:
-    - !Ref DatabaseSecurityGroup
+ MyDB:
+   Type: 'AWS::RDS::DBInstance'
+   Properties:
+     Engine: !Ref Engine
+     EngineVersion: !Ref EngineVersion
+     DBInstanceClass: !Ref InstanceClass
+     MultiAZ: !Ref AZDeployment
+     DBInstanceIdentifier: !Ref InstanceIdentifier
+     MasterUsername: !Ref DBUsername
+     MasterUserPassword: !Ref DBPassword
+     DBName: !Ref DBName
+     DBSubnetGroupName: !Ref myDBSubnetGroup
+     AllocatedStorage: !Ref Storage
+     DBParameterGroupName: !Ref RDSDBParameterGroup
+     AvailabilityZone: !Ref Zone
+     BackupRetentionPeriod: !Ref RetentionPeriod
+     VPCSecurityGroups:
+     - !Ref DatabaseSecurityGroup
 #####################################
 # IAM Policy config                 #
 #####################################
-IAMRole:
-  Type: AWS::IAM::Role
-  Properties:
-    RoleName: "EC2-CSYE6225"
-    AssumeRolePolicyDocument:
-      Version: "2012-10-17"
-      Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-              - ec2.amazonaws.com
-          Action:
-            - 'sts:AssumeRole'
+ IAMRole:
+   Type: AWS::IAM::Role
+   Properties:
+     RoleName: "EC2-CSYE6225"
+     AssumeRolePolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Principal:
+             Service:
+               - ec2.amazonaws.com
+           Action:
+             - 'sts:AssumeRole'
+ 
 #####################################
 # IAM Policy config                 #
 #####################################
-IAMPolicy:
-  Type: 'AWS::IAM::Policy'
-  Properties:
-    PolicyName: WebAppS3
-    PolicyDocument:
-      Version: "2012-10-17"
-      Statement:
-        - Effect: Allow
-          Action:
-          - s3:PutObject
-          - s3:GetObject
-          - s3:DeleteObject
-          Resource:
-          - !Join [":::",["arn:aws:s3", !Ref S3Bucket]]
-          - !Join ["/", [!Join [":::",["arn:aws:s3", !Ref S3Bucket]],"*"]]
-        - Effect: Allow
-          Action:
-          - s3:Get*
-          - s3:List*
-          Resource:
-          - !Join [":::",["arn:aws:s3", !Ref S3Bucket]]
-          - !Join ["/", [!Join [":::",["arn:aws:s3", !Ref S3Bucket]],"*"]]
-        - Effect: Allow
-          Action:
-          - s3:PutObject
-          - s3:Get*
-          - s3:List*
-          Resource:
-          - ""
-        - Effect: Allow
-          Action:
-          - "codedeploy:RegisterApplicationRevision"
-          - "codedeploy:GetApplicationRevision"
-          Resource:
-          - "arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:application:CODE_DEPLOY_APPLICATION_NAME"
-        - Effect: Allow
-          Action:
-          - "codedeploy:CreateDeployment"
-          - "codedeploy:GetDeployment"
-          Resource:
-          - "*"
-        - Effect: Allow
-          Action:
-          - "codedeploy:GetDeploymentConfig"
-          Resource:
-          - "arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.OneAtATime"
-          - "arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.HalfAtATime"
-          - "arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.AllAtOnce" 
-    Roles:
-      - !Ref IAMRole
+ IAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: WebAppS3
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - s3:PutObject
+           - s3:GetObject
+           - s3:DeleteObject
+           Resource:
+           - !Join [":::",["arn:aws:s3", !Ref S3Bucket]]
+           - !Join ["/", [!Join [":::",["arn:aws:s3", !Ref S3Bucket]],"*"]]
+           - TestBucket
+     Roles:
+       - !Ref IAMRole
+
+ IAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: GH-Upload-To-S3
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - s3:PutObject
+           - s3:Get*
+           - s3:List*
+           Resource:
+           - TestBucket
+     Users:
+       - ghactions
+
+ IAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: GH-Code-Deploy
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - codedeploy:RegisterApplicationRevision
+           - codedeploy:GetApplicationRevision
+           Resource:
+           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:application:CODE_DEPLOY_APPLICATION_NAME
+         - Effect: Allow
+           Action:
+           - codedeploy:CreateDeployment
+           - codedeploy:GetDeployment
+           Resource:
+           - "*"
+         - Effect: Allow
+           Action:
+           - codedeploy:GetDeploymentConfig
+           Resource:
+           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.OneAtATime
+           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.HalfAtATime
+           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.AllAtOnce     
+     Users:
+       - ghactions
+  
+ IAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: gh-ec2-ami 
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - codedeploy:RegisterApplicationRevision
+           - codedeploy:GetApplicationRevision
+           Resource:
+           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:application:CODE_DEPLOY_APPLICATION_NAME
+         - Effect: Allow
+           Action:
+           - codedeploy:CreateDeployment
+           - codedeploy:GetDeployment
+           Resource:
+           - "*"
+         - Effect: Allow
+           Action:
+           - "ec2:AttachVolume"
+           - "ec2:AuthorizeSecurityGroupIngress"
+           - "ec2:CopyImage"
+           - "ec2:CreateImage"
+           - "ec2:CreateKeypair"
+           - "ec2:CreateSecurityGroup"
+           - "ec2:CreateSnapshot"
+           - "ec2:CreateTags"
+           - "ec2:CreateVolume"
+           - "ec2:DeleteKeyPair"
+           - "ec2:DeleteSecurityGroup"
+           - "ec2:DeleteSnapshot"
+           - "ec2:DeleteVolume"
+           - "ec2:DeregisterImage"
+           - "ec2:DescribeImageAttribute"
+           - "ec2:DescribeImages"
+           - "ec2:DescribeInstances"
+           - "ec2:DescribeInstanceStatus"
+           - "ec2:DescribeRegions"
+           - "ec2:DescribeSecurityGroups"
+           - "ec2:DescribeSnapshots"
+           - "ec2:DescribeSubnets"
+           - "ec2:DescribeTags"
+           - "ec2:DescribeVolumes"
+           - "ec2:DetachVolume"
+           - "ec2:GetPasswordData"
+           - "ec2:ModifyImageAttribute"
+           - "ec2:ModifyInstanceAttribute"
+           - "ec2:ModifySnapshotAttribute"
+           - "ec2:RegisterImage"
+           - "ec2:RunInstances"
+           - "ec2:StopInstances"
+           - "ec2:TerminateInstances"
+           Resource:
+           - "*"    
+     Users:
+       - ghactions
+ 
 #####################################
 # Instance Profile configurations   #
 #####################################
-MyInstanceProfile:
-  Type: "AWS::IAM::InstanceProfile"
-  Properties:
-    Roles:
-      - !Ref IAMRole
+ MyInstanceProfile:
+   Type: "AWS::IAM::InstanceProfile"
+   Properties:
+     Roles:
+       - !Ref IAMRole
+ 
+ 
 #####################################
 # Launch Template       #
 #####################################
-asgLaunchTemplate:
-  Type: AWS::EC2::LaunchTemplate
-  Properties:
-    LaunchTemplateName: !Sub '${AWS::StackName}-launch-template'
-    LaunchTemplateData:
-      NetworkInterfaces:
-        - DeviceIndex: 0
-          AssociatePublicIpAddress: true
-          Groups:
-            - !Ref InstanceSecurityGroup
-          DeleteOnTermination: true
-      BlockDeviceMappings:
-      - DeviceName: !Ref BlockDeviceName
-        Ebs:
-          VolumeSize: !Ref BlockDeviceSize
-          VolumeType: !Ref BlockDeviceType
-          DeleteOnTermination: true
-      ImageId: !Ref AMI
-      #IamInstanceProfile: !Ref MyInstanceProfile
-      IamInstanceProfile:
-        Arn: !GetAtt
-          - MyInstanceProfile
-          - Arn
-      InstanceType: t2.micro
-      KeyName: testkey
-      UserData:
-        Fn::Base64:
-          !Sub |
-            #!/bin/bash
-            cat > /etc/environment << 'EOF'
-            DB_USERNAME="csye6225_user"
-            DB_NAME="csye6225"
-            DB_PASSWORD="XyZZySpoon!"
-            DB_CONNECTION=${MyDB.Endpoint.Address}
-            BUCKET_NAME=${S3Bucket}
-            PORT="5432"
-            AWS_REGION="us-east-1"
-            EOF
-            cat > /etc/profile.d/load_env.sh << 'EOF'
-            export DB_USERNAME="csye6225_user"
-            export DB_NAME="csye6225"
-            export DB_PASSWORD="XyZZySpoon!"
-            export DB_CONNECTION=${MyDB.Endpoint.Address}
-            export BUCKET_NAME=${S3Bucket}
-            export PORT="5432"
-            export AWS_REGION="us-east-1"
-            sleep 10
-            sudo systemctl start node.service
-            EOF
+ 
+ asgLaunchTemplate:
+   Type: AWS::EC2::LaunchTemplate
+   Properties:
+     LaunchTemplateName: !Sub '${AWS::StackName}-launch-template'
+     LaunchTemplateData:
+       NetworkInterfaces:
+         - DeviceIndex: 0
+           AssociatePublicIpAddress: true
+           Groups:
+             - !Ref InstanceSecurityGroup
+           DeleteOnTermination: true
+       BlockDeviceMappings:
+       - DeviceName: !Ref BlockDeviceName
+         Ebs:
+           VolumeSize: !Ref BlockDeviceSize
+           VolumeType: !Ref BlockDeviceType
+           DeleteOnTermination: true
+       ImageId: !Ref AMI
+       #IamInstanceProfile: !Ref MyInstanceProfile
+       IamInstanceProfile:
+         Arn: !GetAtt
+           - MyInstanceProfile
+           - Arn
+       InstanceType: t2.micro
+       KeyName: testkey
+       UserData:
+         Fn::Base64:
+           !Sub |
+             #!/bin/bash
+             cat > /etc/environment << 'EOF'
+             DB_USERNAME="csye6225_user"
+             DB_NAME="csye6225"
+             DB_PASSWORD="XyZZySpoon!"
+             DB_CONNECTION=${MyDB.Endpoint.Address}
+             BUCKET_NAME=${S3Bucket}
+             PORT="5432"
+             AWS_REGION="us-east-1"
+             EOF
+ 
+             cat > /etc/profile.d/load_env.sh << 'EOF'
+             export DB_USERNAME="csye6225_user"
+             export DB_NAME="csye6225"
+             export DB_PASSWORD="XyZZySpoon!"
+             export DB_CONNECTION=${MyDB.Endpoint.Address}
+             export BUCKET_NAME=${S3Bucket}
+             export PORT="5432"
+             export AWS_REGION="us-east-1"
+             sleep 10
+             sudo systemctl start node.service
+             EOF
+ 
 #####################################
 # Auto Scaling Group       #
 #####################################
-AutoScalingGroup:
-  Type: AWS::AutoScaling::AutoScalingGroup
-  Properties:
-    AutoScalingGroupName: !Sub ${AWS::StackName}-asg
-    AvailabilityZones:
-      - !Select [0, !GetAZs ""]
-      - !Select [1, !GetAZs ""]
-      - !Select [2, !GetAZs ""]
-    Cooldown: !Ref CooldownPeriod
-    DesiredCapacity: !Ref MinSize
-    HealthCheckGracePeriod: 90
-    HealthCheckType: EC2
-    LaunchTemplate:
-      LaunchTemplateId: !Ref asgLaunchTemplate
-      Version: !GetAtt asgLaunchTemplate.LatestVersionNumber
-    # LoadBalancerNames:
-    #   - String
-    MaxSize: !Ref MaxSize
-    MinSize: !Ref MinSize
-    Tags:
-      - Key: Application
-        Value: WebApp
-        PropagateAtLaunch: "true"
-      - Key: Name
-        Value: !Sub ${AWS::StackName}-asg
-        PropagateAtLaunch: "true"
-    TargetGroupARNs:
-      - !Ref loadBalancerTargetGroup
-    VPCZoneIdentifier:
-      - !Ref mySubnet1
-      - !Ref mySubnet2
-      - !Ref mySubnet3
+ 
+ AutoScalingGroup:
+   Type: AWS::AutoScaling::AutoScalingGroup
+   Properties:
+     AutoScalingGroupName: !Sub ${AWS::StackName}-asg
+     AvailabilityZones:
+       - !Select [0, !GetAZs ""]
+       - !Select [1, !GetAZs ""]
+       - !Select [2, !GetAZs ""]
+     Cooldown: !Ref CooldownPeriod
+     DesiredCapacity: !Ref MinSize
+     HealthCheckGracePeriod: 90
+     HealthCheckType: EC2
+     LaunchTemplate:
+       LaunchTemplateId: !Ref asgLaunchTemplate
+       Version: !GetAtt asgLaunchTemplate.LatestVersionNumber
+     # LoadBalancerNames:
+     #   - String
+     MaxSize: !Ref MaxSize
+     MinSize: !Ref MinSize
+     Tags:
+       - Key: Application
+         Value: WebApp
+         PropagateAtLaunch: "true"
+       - Key: Name
+         Value: !Sub ${AWS::StackName}-asg
+         PropagateAtLaunch: "true"
+     TargetGroupARNs:
+       - !Ref loadBalancerTargetGroup
+     VPCZoneIdentifier:
+       - !Ref mySubnet1
+       - !Ref mySubnet2
+       - !Ref mySubnet3
+ 
 #####################################
 # Auto Scaling UP Policy      #
 #####################################
-ScaleUpPolicy:
-  Type: AWS::AutoScaling::ScalingPolicy
-  Properties:
-    AdjustmentType: ChangeInCapacity
-    AutoScalingGroupName: !Ref AutoScalingGroup
-    Cooldown: '1'
-    ScalingAdjustment: 1
-ScaleDownPolicy:
-  Type: AWS::AutoScaling::ScalingPolicy
-  Properties:
-    AdjustmentType: ChangeInCapacity
-    AutoScalingGroupName: !Ref AutoScalingGroup
-    Cooldown: '1'
-    ScalingAdjustment: -1
-MemoryAlarmHigh:
-  Type: AWS::CloudWatch::Alarm
-  Properties:
-    EvaluationPeriods: 1
-    Statistic: Average
-    Threshold: !Ref MaxSize
-    AlarmDescription: Go in Alarm is memory is higher than 5% for 60 seconds
-    Period: !Ref CooldownPeriod
-    AlarmActions:
-    - !Ref ScaleUpPolicy
-    Namespace: AWS/EC2
-    Dimensions:
-    - Name: AutoScalingGroupName
-      Value: !Ref AutoScalingGroup
-    ComparisonOperator: GreaterThanThreshold
-    MetricName: CPUUtilization
-MemoryAlarmLow:
-  Type: AWS::CloudWatch::Alarm
-  Properties:
-    EvaluationPeriods: 1
-    Statistic: Average
-    Threshold: !Ref MinSize
-    AlarmDescription: Go in Alarm is memory is lower than 3% for 60 seconds
-    Period: !Ref CooldownPeriod
-    AlarmActions:
-    - !Ref ScaleDownPolicy
-    Namespace: AWS/EC2
-    Dimensions:
-    - Name: AutoScalingGroupName
-      Value: !Ref AutoScalingGroup
-    ComparisonOperator: LessThanThreshold
-    MetricName: CPUUtilization
+ 
+ ScaleUpPolicy:
+   Type: AWS::AutoScaling::ScalingPolicy
+   Properties:
+     AdjustmentType: ChangeInCapacity
+     AutoScalingGroupName: !Ref AutoScalingGroup
+     Cooldown: '1'
+     ScalingAdjustment: 1
+ 
+ ScaleDownPolicy:
+   Type: AWS::AutoScaling::ScalingPolicy
+   Properties:
+     AdjustmentType: ChangeInCapacity
+     AutoScalingGroupName: !Ref AutoScalingGroup
+     Cooldown: '1'
+     ScalingAdjustment: -1
+ 
+ MemoryAlarmHigh:
+   Type: AWS::CloudWatch::Alarm
+   Properties:
+     EvaluationPeriods: 1
+     Statistic: Average
+     Threshold: !Ref MaxSize
+     AlarmDescription: Go in Alarm is memory is higher than 5% for 60 seconds
+     Period: !Ref CooldownPeriod
+     AlarmActions:
+     - !Ref ScaleUpPolicy
+     Namespace: AWS/EC2
+     Dimensions:
+     - Name: AutoScalingGroupName
+       Value: !Ref AutoScalingGroup
+     ComparisonOperator: GreaterThanThreshold
+     MetricName: CPUUtilization
+ 
+ MemoryAlarmLow:
+   Type: AWS::CloudWatch::Alarm
+   Properties:
+     EvaluationPeriods: 1
+     Statistic: Average
+     Threshold: !Ref MinSize
+     AlarmDescription: Go in Alarm is memory is lower than 3% for 60 seconds
+     Period: !Ref CooldownPeriod
+     AlarmActions:
+     - !Ref ScaleDownPolicy
+     Namespace: AWS/EC2
+     Dimensions:
+     - Name: AutoScalingGroupName
+       Value: !Ref AutoScalingGroup
+     ComparisonOperator: LessThanThreshold
+     MetricName: CPUUtilization
+ 
 #####################################
 # LoadBalancer      #
 #####################################
-loadBalancer:
-  Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-  Properties:
-    IpAddressType: !Ref IpAddressType
-    LoadBalancerAttributes:
-      - Key: idle_timeout.timeout_seconds
-        Value: !Ref CooldownPeriod
-    Name: !Sub ${AWS::StackName}-load-balancer
-    Scheme: !Ref loadbalanceScheme
-    SecurityGroups:
-      - !Ref LoadBalancerSecurityGroup
-    Subnets:
-      - !Ref mySubnet1
-      - !Ref mySubnet2
-      - !Ref mySubnet3
-    Tags:
-      - Key: Application
-        Value: WebApp
-      - Key: Name
-        Value: !Sub ${AWS::StackName}-load-balancer
-    #Type: application
+ 
+ loadBalancer:
+   Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+   Properties:
+     IpAddressType: !Ref IpAddressType
+     LoadBalancerAttributes:
+       - Key: idle_timeout.timeout_seconds
+         Value: !Ref CooldownPeriod
+     Name: !Sub ${AWS::StackName}-load-balancer
+     Scheme: !Ref loadbalanceScheme
+     SecurityGroups:
+       - !Ref LoadBalancerSecurityGroup
+     Subnets:
+       - !Ref mySubnet1
+       - !Ref mySubnet2
+       - !Ref mySubnet3
+     Tags:
+       - Key: Application
+         Value: WebApp
+       - Key: Name
+         Value: !Sub ${AWS::StackName}-load-balancer
+     #Type: application
+ 
 #####################################
 # LoadBalancer TargetGroup      #
 #####################################
-loadBalancerTargetGroup:
-  Type: AWS::ElasticLoadBalancingV2::TargetGroup
-  Properties:
-    HealthCheckIntervalSeconds: !Ref HealthCheckInterval
-    HealthCheckPath: !Ref LoadEndPoint
-    HealthCheckPort: !Ref AppPort
-    HealthCheckProtocol: !Ref HTTPProtocol
-    HealthCheckTimeoutSeconds: !Ref CooldownPeriod
-    HealthyThresholdCount: !Ref ThresholdCount
-    IpAddressType: !Ref IpAddressType
-    Name: !Sub ${AWS::StackName}-lb-tg
-    Port: !Ref AppPort
-    Protocol: !Ref HTTPProtocol
-    Tags:
-      - Key: Name
-        Value: !Sub ${AWS::StackName}-lb-tg
-    TargetGroupAttributes:
-      - Key: deregistration_delay.timeout_seconds
-        Value: '20'
-    TargetType: instance
-    UnhealthyThresholdCount: !Ref ThresholdCount
-    VpcId: !Ref myVPC
+ 
+ loadBalancerTargetGroup:
+   Type: AWS::ElasticLoadBalancingV2::TargetGroup
+   Properties:
+     HealthCheckIntervalSeconds: !Ref HealthCheckInterval
+     HealthCheckPath: !Ref LoadEndPoint
+     HealthCheckPort: !Ref AppPort
+     HealthCheckProtocol: !Ref HTTPProtocol
+     HealthCheckTimeoutSeconds: !Ref CooldownPeriod
+     HealthyThresholdCount: !Ref ThresholdCount
+     IpAddressType: !Ref IpAddressType
+     Name: !Sub ${AWS::StackName}-lb-tg
+     Port: !Ref AppPort
+     Protocol: !Ref HTTPProtocol
+     Tags:
+       - Key: Name
+         Value: !Sub ${AWS::StackName}-lb-tg
+     TargetGroupAttributes:
+       - Key: deregistration_delay.timeout_seconds
+         Value: '20'
+     TargetType: instance
+     UnhealthyThresholdCount: !Ref ThresholdCount
+     VpcId: !Ref myVPC
+ 
 #####################################
 # LoadBalancer Listener      #
 #####################################
-loadBalancerListener:
-  Type: AWS::ElasticLoadBalancingV2::Listener
-  Properties:
-    DefaultActions:
-      - Type: forward
-        TargetGroupArn: !Ref loadBalancerTargetGroup
-    LoadBalancerArn: !Ref loadBalancer
-    Port: !Ref HTTPPort
-    Protocol: !Ref HTTPProtocol
-LoadBalancerAlias:
-  Type: AWS::Route53::RecordSet
-  Properties:
-    AliasTarget:
-      DNSName: !GetAtt loadBalancer.DNSName
-      HostedZoneId: !GetAtt loadBalancer.CanonicalHostedZoneID
-    HostedZoneId: !Ref HostedZoneID
-    Name: !Ref HostedZone
-    Type: A  
+ 
+ loadBalancerListener:
+   Type: AWS::ElasticLoadBalancingV2::Listener
+   Properties:
+     DefaultActions:
+       - Type: forward
+         TargetGroupArn: !Ref loadBalancerTargetGroup
+     LoadBalancerArn: !Ref loadBalancer
+     Port: !Ref HTTPPort
+     Protocol: !Ref HTTPProtocol
+ 
+ LoadBalancerAlias:
+   Type: AWS::Route53::RecordSet
+   Properties:
+     AliasTarget:
+       DNSName: !GetAtt loadBalancer.DNSName
+       HostedZoneId: !GetAtt loadBalancer.CanonicalHostedZoneID
+     HostedZoneId: !Ref HostedZoneID
+     Name: !Ref HostedZone
+     Type: A   
+ 
 # Output params
 Outputs:
-VpcId:
-  Description: The VPC ID
-  Value: !Ref myVPC
-Subnet1:
-  Description: Subnet1 ID
-  Value: !Ref mySubnet1
-Subnet2:
-  Description: Subnet2 ID
-  Value: !Ref mySubnet2
-Subnet3:
-  Description: Subnet3 ID
-  Value: !Ref mySubnet3
-InternetGatewayId:
-  Description: InternetGateway ID
-  Value: !Ref InternetGateway
+ VpcId:
+   Description: The VPC ID
+   Value: !Ref myVPC
+ Subnet1:
+   Description: Subnet1 ID
+   Value: !Ref mySubnet1
+ Subnet2:
+   Description: Subnet2 ID
+   Value: !Ref mySubnet2
+ Subnet3:
+   Description: Subnet3 ID
+   Value: !Ref mySubnet3
+ InternetGatewayId:
+   Description: InternetGateway ID
+   Value: !Ref InternetGateway
+
