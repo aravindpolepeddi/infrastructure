@@ -142,5 +142,9 @@
   {
     "ParameterKey": "BlockDeviceType",
       "ParameterValue": "gp2"
+  },
+  {
+    "ParameterKey": "ApplicationName",
+      "ParameterValue": "csye6225-webapp"
   }
   ]

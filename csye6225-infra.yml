@@ -148,6 +148,10 @@ Parameters:
    Description: "BlockDeviceType"
    Type: "String"
    Default: "gp2"
+ ApplicationName:
+   Description: "ApplicationName"
+   Type: "String"
+   Default: "csye6225-webapp"
  
 Resources:
  
@@ -478,6 +482,22 @@ Resources:
 #####################################
 # IAM Policy config                 #
 #####################################
+ IAMRole:
+   Type: AWS::IAM::Role
+   Properties:
+     RoleName: "Code-Deploy-Service-Role"
+     AssumeRolePolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Principal:
+             Service:
+               - codedeploy.amazonaws.com
+           Action:
+             - 'sts:AssumeRole'
+     ManagedPolocyNarns:
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole 
+
  IAMRole:
    Type: AWS::IAM::Role
    Properties:
@@ -851,6 +871,47 @@ Resources:
      HostedZoneId: !Ref HostedZoneID
      Name: !Ref HostedZone
      Type: A   
+
+#####################################
+# CodeDeploy Application     #
+#####################################
+
+Type: AWS::CodeDeploy::Application
+Properties: 
+  ApplicationName: !Ref ApplicationName
+  ComputePlatform: EC2/On-premises
+
+#####################################
+# CodeDeploy Deployment Group    #
+#####################################
+
+  CodeDeployDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref ApplicationName
+      AutoRollbackConfiguration:
+        Enabled: true
+        Events:
+          - DEPLOYMENT_FAILURE
+      AutoScalingGroups:
+        - !Ref myASG
+      DeploymentConfigName: CodeDeployDefault.AllAtOnce
+      DeploymentGroupName: csye6225-webapp-deployment
+      DeploymentStyle:
+        DeploymentOption: WITH_TRAFFIC_CONTROL
+        DeploymentType: IN_PLACE
+      Ec2TagFilters:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-asg
+          Type: "KEY_AND_VALUE"
+      LoadBalancerInfo:
+        TargetGroupInfoList:
+          - Name: !GetAtt loadBalancerTargetGroup.TargetGroupName
+      OutdatedInstancesStrategy: IGNORE
+      ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
+
+
+
  
 # Output params
 Outputs:
