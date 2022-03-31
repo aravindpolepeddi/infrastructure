@@ -17,7 +17,7 @@
   },
   {
         "ParameterKey": "AMI",
-          "ParameterValue": "ami-073f14214cfba4a06"
+          "ParameterValue": "ami-0e551efbdc3c09124"
   },
   {
         "ParameterKey": "Env",
@@ -145,6 +145,18 @@
   },
   {
     "ParameterKey": "ApplicationName",
+      "ParameterValue": "csye6225-webapp"
+  },
+  {
+    "ParameterKey": "GHRegion",
+      "ParameterValue": "us-east-1"
+  },
+  {
+    "ParameterKey": "GHAccount",
+      "ParameterValue": "487291657422"
+  },
+  {
+    "ParameterKey": "CODEDEPLOYAPPLICATIONNAME",
       "ParameterValue": "csye6225-webapp"
   }
   ]

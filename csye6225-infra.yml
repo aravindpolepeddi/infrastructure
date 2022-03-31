@@ -152,8 +152,21 @@ Parameters:
    Description: "ApplicationName"
    Type: "String"
    Default: "csye6225-webapp"
- 
+ GHRegion:
+   Description: "GHRegion"
+   Type: "String"
+   Default: "us-east-1"
+ GHAccount:
+   Description: "GHAccount"
+   Type: "String"
+   Default: "487291657422"
+ CODEDEPLOYAPPLICATIONNAME:
+   Description: "CODEDEPLOYAPPLICATIONNAME"
+   Type: "String"
+   Default: "csye6225-webapp"
+
 Resources:
+
  
 #####################################
 # VPC configurations                #
@@ -482,7 +495,7 @@ Resources:
 #####################################
 # IAM Policy config                 #
 #####################################
- IAMRole:
+ CodeDeployServiceIAMRole:
    Type: AWS::IAM::Role
    Properties:
      RoleName: "Code-Deploy-Service-Role"
@@ -495,7 +508,7 @@ Resources:
                - codedeploy.amazonaws.com
            Action:
              - 'sts:AssumeRole'
-     ManagedPolocyNarns:
+     ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole 
 
  IAMRole:
@@ -527,14 +540,19 @@ Resources:
            - s3:PutObject
            - s3:GetObject
            - s3:DeleteObject
+           - s3:Get*
+           - s3:List*
            Resource:
            - !Join [":::",["arn:aws:s3", !Ref S3Bucket]]
            - !Join ["/", [!Join [":::",["arn:aws:s3", !Ref S3Bucket]],"*"]]
-           - TestBucket
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me"
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me/*"
+           - "arn:aws:s3:::aws-codedeploy-us-east-1"
+           - "arn:aws:s3:::aws-codedeploy-us-east-1/*"
      Roles:
        - !Ref IAMRole
 
- IAMPolicy:
+ GHUploadToS3IAMPolicy:
    Type: 'AWS::IAM::Policy'
    Properties:
      PolicyName: GH-Upload-To-S3
@@ -547,11 +565,12 @@ Resources:
            - s3:Get*
            - s3:List*
            Resource:
-           - TestBucket
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me"
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me/*"
      Users:
        - ghactions
-
- IAMPolicy:
+    
+ GHCodeDeployIAMPolicy:
    Type: 'AWS::IAM::Policy'
    Properties:
      PolicyName: GH-Code-Deploy
@@ -563,7 +582,7 @@ Resources:
            - codedeploy:RegisterApplicationRevision
            - codedeploy:GetApplicationRevision
            Resource:
-           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:application:CODE_DEPLOY_APPLICATION_NAME
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, application, !Ref CODEDEPLOYAPPLICATIONNAME]]
          - Effect: Allow
            Action:
            - codedeploy:CreateDeployment
@@ -574,31 +593,20 @@ Resources:
            Action:
            - codedeploy:GetDeploymentConfig
            Resource:
-           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.OneAtATime
-           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.HalfAtATime
-           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:deploymentconfig:CodeDeployDefault.AllAtOnce     
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, deploymentconfig, CodeDeployDefault.OneAtATime]]
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, deploymentconfig, CodeDeployDefault.HalfAtATime]]
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, deploymentconfig, CodeDeployDefault.AllAtOnce]]
      Users:
        - ghactions
-  
- IAMPolicy:
+
+
+ GHEC2AMIIAMPolicy:
    Type: 'AWS::IAM::Policy'
    Properties:
-     PolicyName: gh-ec2-ami 
+     PolicyName: gh-ec2-ami
      PolicyDocument:
        Version: "2012-10-17"
        Statement:
-         - Effect: Allow
-           Action:
-           - codedeploy:RegisterApplicationRevision
-           - codedeploy:GetApplicationRevision
-           Resource:
-           - arn:aws:codedeploy:AWS_REGION:AWS_ACCOUNT_ID:application:CODE_DEPLOY_APPLICATION_NAME
-         - Effect: Allow
-           Action:
-           - codedeploy:CreateDeployment
-           - codedeploy:GetDeployment
-           Resource:
-           - "*"
          - Effect: Allow
            Action:
            - "ec2:AttachVolume"
@@ -635,9 +643,10 @@ Resources:
            - "ec2:StopInstances"
            - "ec2:TerminateInstances"
            Resource:
-           - "*"    
+           - "*"
      Users:
        - ghactions
+
  
 #####################################
 # Instance Profile configurations   #
@@ -875,40 +884,40 @@ Resources:
 #####################################
 # CodeDeploy Application     #
 #####################################
-
-Type: AWS::CodeDeploy::Application
-Properties: 
-  ApplicationName: !Ref ApplicationName
-  ComputePlatform: EC2/On-premises
+ CodeDeployApplication:
+   Type: AWS::CodeDeploy::Application
+   Properties: 
+     ApplicationName: !Ref ApplicationName
+     ComputePlatform: Server
 
 #####################################
 # CodeDeploy Deployment Group    #
 #####################################
 
-  CodeDeployDeploymentGroup:
-    Type: AWS::CodeDeploy::DeploymentGroup
-    Properties:
-      ApplicationName: !Ref ApplicationName
-      AutoRollbackConfiguration:
-        Enabled: true
-        Events:
-          - DEPLOYMENT_FAILURE
-      AutoScalingGroups:
-        - !Ref myASG
-      DeploymentConfigName: CodeDeployDefault.AllAtOnce
-      DeploymentGroupName: csye6225-webapp-deployment
-      DeploymentStyle:
-        DeploymentOption: WITH_TRAFFIC_CONTROL
-        DeploymentType: IN_PLACE
-      Ec2TagFilters:
-        - Key: Name
-          Value: !Sub ${AWS::StackName}-asg
-          Type: "KEY_AND_VALUE"
-      LoadBalancerInfo:
-        TargetGroupInfoList:
-          - Name: !GetAtt loadBalancerTargetGroup.TargetGroupName
-      OutdatedInstancesStrategy: IGNORE
-      ServiceRoleArn: !GetAtt CodeDeployServiceRole.Arn
+ CodeDeployDeploymentGroup:
+   Type: AWS::CodeDeploy::DeploymentGroup
+   Properties:
+     ApplicationName: !Ref ApplicationName
+     AutoRollbackConfiguration:
+       Enabled: true
+       Events:
+         - DEPLOYMENT_FAILURE
+     AutoScalingGroups:
+       - !Ref AutoScalingGroup
+     DeploymentConfigName: CodeDeployDefault.AllAtOnce
+     DeploymentGroupName: csye6225-webapp-deployment
+     DeploymentStyle:
+       DeploymentOption: WITH_TRAFFIC_CONTROL
+       DeploymentType: IN_PLACE
+     Ec2TagFilters:
+       - Key: Name
+         Value: !Sub ${AWS::StackName}-asg
+         Type: "KEY_AND_VALUE"
+     LoadBalancerInfo:
+       TargetGroupInfoList:
+         - Name: !GetAtt loadBalancerTargetGroup.TargetGroupName
+     OutdatedInstancesStrategy: IGNORE
+     ServiceRoleArn: !GetAtt CodeDeployServiceIAMRole.Arn
 
 
 
