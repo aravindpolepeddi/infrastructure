@@ -148,8 +148,25 @@ Parameters:
    Description: "BlockDeviceType"
    Type: "String"
    Default: "gp2"
- 
+ ApplicationName:
+   Description: "ApplicationName"
+   Type: "String"
+   Default: "csye6225-webapp"
+ GHRegion:
+   Description: "GHRegion"
+   Type: "String"
+   Default: "us-east-1"
+ GHAccount:
+   Description: "GHAccount"
+   Type: "String"
+   Default: "487291657422"
+ CODEDEPLOYAPPLICATIONNAME:
+   Description: "CODEDEPLOYAPPLICATIONNAME"
+   Type: "String"
+   Default: "csye6225-webapp"
+
 Resources:
+
  
 #####################################
 # VPC configurations                #
@@ -478,6 +495,22 @@ Resources:
 #####################################
 # IAM Policy config                 #
 #####################################
+ CodeDeployServiceIAMRole:
+   Type: AWS::IAM::Role
+   Properties:
+     RoleName: "Code-Deploy-Service-Role"
+     AssumeRolePolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Principal:
+             Service:
+               - codedeploy.amazonaws.com
+           Action:
+             - 'sts:AssumeRole'
+     ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole 
+
  IAMRole:
    Type: AWS::IAM::Role
    Properties:
@@ -507,11 +540,113 @@ Resources:
            - s3:PutObject
            - s3:GetObject
            - s3:DeleteObject
+           - s3:Get*
+           - s3:List*
            Resource:
            - !Join [":::",["arn:aws:s3", !Ref S3Bucket]]
            - !Join ["/", [!Join [":::",["arn:aws:s3", !Ref S3Bucket]],"*"]]
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me"
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me/*"
+           - "arn:aws:s3:::aws-codedeploy-us-east-1"
+           - "arn:aws:s3:::aws-codedeploy-us-east-1/*"
      Roles:
        - !Ref IAMRole
+
+ GHUploadToS3IAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: GH-Upload-To-S3
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - s3:PutObject
+           - s3:Get*
+           - s3:List*
+           Resource:
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me"
+           - "arn:aws:s3:::codedeploy.demo.polepeddiaravind.me/*"
+     Users:
+       - ghactions
+    
+ GHCodeDeployIAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: GH-Code-Deploy
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - codedeploy:RegisterApplicationRevision
+           - codedeploy:GetApplicationRevision
+           Resource:
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, application, !Ref CODEDEPLOYAPPLICATIONNAME]]
+         - Effect: Allow
+           Action:
+           - codedeploy:CreateDeployment
+           - codedeploy:GetDeployment
+           Resource:
+           - "*"
+         - Effect: Allow
+           Action:
+           - codedeploy:GetDeploymentConfig
+           Resource:
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, deploymentconfig, CodeDeployDefault.OneAtATime]]
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, deploymentconfig, CodeDeployDefault.HalfAtATime]]
+           - !Join [ ":", [ arn, aws, codedeploy, !Ref GHRegion, !Ref GHAccount, deploymentconfig, CodeDeployDefault.AllAtOnce]]
+     Users:
+       - ghactions
+
+
+ GHEC2AMIIAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: gh-ec2-ami
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - "ec2:AttachVolume"
+           - "ec2:AuthorizeSecurityGroupIngress"
+           - "ec2:CopyImage"
+           - "ec2:CreateImage"
+           - "ec2:CreateKeypair"
+           - "ec2:CreateSecurityGroup"
+           - "ec2:CreateSnapshot"
+           - "ec2:CreateTags"
+           - "ec2:CreateVolume"
+           - "ec2:DeleteKeyPair"
+           - "ec2:DeleteSecurityGroup"
+           - "ec2:DeleteSnapshot"
+           - "ec2:DeleteVolume"
+           - "ec2:DeregisterImage"
+           - "ec2:DescribeImageAttribute"
+           - "ec2:DescribeImages"
+           - "ec2:DescribeInstances"
+           - "ec2:DescribeInstanceStatus"
+           - "ec2:DescribeRegions"
+           - "ec2:DescribeSecurityGroups"
+           - "ec2:DescribeSnapshots"
+           - "ec2:DescribeSubnets"
+           - "ec2:DescribeTags"
+           - "ec2:DescribeVolumes"
+           - "ec2:DetachVolume"
+           - "ec2:GetPasswordData"
+           - "ec2:ModifyImageAttribute"
+           - "ec2:ModifyInstanceAttribute"
+           - "ec2:ModifySnapshotAttribute"
+           - "ec2:RegisterImage"
+           - "ec2:RunInstances"
+           - "ec2:StopInstances"
+           - "ec2:TerminateInstances"
+           Resource:
+           - "*"
+     Users:
+       - ghactions
+
  
 #####################################
 # Instance Profile configurations   #
@@ -745,6 +880,47 @@ Resources:
      HostedZoneId: !Ref HostedZoneID
      Name: !Ref HostedZone
      Type: A   
+
+#####################################
+# CodeDeploy Application     #
+#####################################
+ CodeDeployApplication:
+   Type: AWS::CodeDeploy::Application
+   Properties: 
+     ApplicationName: !Ref ApplicationName
+     ComputePlatform: Server
+
+#####################################
+# CodeDeploy Deployment Group    #
+#####################################
+
+ CodeDeployDeploymentGroup:
+   Type: AWS::CodeDeploy::DeploymentGroup
+   Properties:
+     ApplicationName: !Ref ApplicationName
+     AutoRollbackConfiguration:
+       Enabled: true
+       Events:
+         - DEPLOYMENT_FAILURE
+     AutoScalingGroups:
+       - !Ref AutoScalingGroup
+     DeploymentConfigName: CodeDeployDefault.AllAtOnce
+     DeploymentGroupName: csye6225-webapp-deployment
+     DeploymentStyle:
+       DeploymentOption: WITH_TRAFFIC_CONTROL
+       DeploymentType: IN_PLACE
+     Ec2TagFilters:
+       - Key: Name
+         Value: !Sub ${AWS::StackName}-asg
+         Type: "KEY_AND_VALUE"
+     LoadBalancerInfo:
+       TargetGroupInfoList:
+         - Name: !GetAtt loadBalancerTargetGroup.TargetGroupName
+     OutdatedInstancesStrategy: IGNORE
+     ServiceRoleArn: !GetAtt CodeDeployServiceIAMRole.Arn
+
+
+
  
 # Output params
 Outputs:
