@@ -17,7 +17,7 @@
   },
   {
         "ParameterKey": "AMI",
-          "ParameterValue": "ami-0e551efbdc3c09124"
+          "ParameterValue": "ami-0c69b02f37838bed5"
   },
   {
         "ParameterKey": "Env",
