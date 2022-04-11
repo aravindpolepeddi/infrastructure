@@ -509,7 +509,7 @@ Resources:
            Action:
              - 'sts:AssumeRole'
      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole 
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole
 
  IAMRole:
    Type: AWS::IAM::Role
@@ -524,7 +524,10 @@ Resources:
                - ec2.amazonaws.com
            Action:
              - 'sts:AssumeRole'
- 
+     ManagedPolicyArns:
+       - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy 
+
+
 #####################################
 # IAM Policy config                 #
 #####################################
