@@ -525,7 +525,28 @@ Resources:
            Action:
              - 'sts:AssumeRole'
      ManagedPolicyArns:
-       - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy 
+       - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+
+ AWSLambdaIAMRole:
+   Type: AWS::IAM::Role
+   Properties:
+     RoleName:
+       Fn::Sub: lambda-role
+     AssumeRolePolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Principal:
+             Service:
+               - lambda.amazonaws.com
+           Action:
+             - sts:AssumeRole
+     ManagedPolicyArns:
+       - arn:aws:iam::aws:policy/AWSLambdaExecute
+       - arn:aws:iam::aws:policy/AmazonS3FullAccess
+       - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+
+  
 
 
 #####################################
@@ -649,6 +670,27 @@ Resources:
            - "*"
      Users:
        - ghactions
+
+ LambdaUploadToS3IAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: AWSLambdaBasicSESExecutionRole
+     PolicyDocument:
+       Version: '2012-10-17'
+       Statement:
+         - Effect: Allow
+           Action:
+           - 'logs:CreateLogGroup'
+           Resource:
+           - 'arn:aws:logs:us-east-1:487291657422:*'
+         - Effect: Allow
+           Action:
+           - 'logs:CreateLogStream'
+           - 'logs:PutLogEvents'
+           Resource:
+           - 'arn:aws:logs:us-east-1:487291657422:log-group:/aws/lambda/csye6225-lambda-function:*'
+     Roles:
+       - !Ref AWSLambdaIAMRole
 
  
 #####################################
@@ -921,6 +963,79 @@ Resources:
          - Name: !GetAtt loadBalancerTargetGroup.TargetGroupName
      OutdatedInstancesStrategy: IGNORE
      ServiceRoleArn: !GetAtt CodeDeployServiceIAMRole.Arn
+
+#####################################
+# SNS Topic    #
+#####################################
+ MySNSTopic:
+   Type: AWS::SNS::Topic
+   DependsOn:  
+     - AWSLambda
+   Properties:
+     TopicName: csye6226-sns-topic-Tv01
+     DisplayName: csye6226-sns-topic
+     Subscription:
+       - Protocol: lambda
+         Endpoint: !GetAtt AWSLambda.Arn
+
+#####################################
+# SNS Topic Policy    #
+#####################################
+
+ SNSTopicPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: SNSTopicPolicy
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action:
+           - sns:Publish
+           Resource:
+           - !Ref MySNSTopic
+     Roles:
+       - !Ref IAMRole
+
+
+
+#####################################
+# Lambda Function    #
+#####################################
+
+ AWSLambda:
+   Type: AWS::Lambda::Function
+   Properties:
+     Runtime: nodejs14.x
+     Role: 
+       Fn::GetAtt:
+         - AWSLambdaIAMRole
+         - Arn
+     Handler: index.handler
+     Code:
+       ZipFile: |
+         var aws = require('aws-sdk')
+         var response = require('cfn-response')
+         exports.handler = function(event, context) {
+             console.log("REQUEST RECEIVED:\n" + JSON.stringify(event))
+             // For Delete requests, immediately send a SUCCESS response.
+             if (event.RequestType == "Delete") {
+                 response.send(event, context, "SUCCESS")
+                 return
+             }
+         }
+     Description: Invoke a function during stack creation.
+     FunctionName: csye6225-lambda-function
+     TracingConfig:
+       Mode: Active
+
+ LambdaInvokePermission:
+   Type: AWS::Lambda::Permission
+   Properties:
+     FunctionName: arn:aws:lambda:us-east-1:487291657422:function:csye6225-lambda-function
+     Action: lambda:InvokeFunction
+     Principal: sns.amazonaws.com
+     SourceArn: !Ref MySNSTopic
 
 
 
