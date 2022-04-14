@@ -158,5 +158,13 @@
   {
     "ParameterKey": "CODEDEPLOYAPPLICATIONNAME",
       "ParameterValue": "csye6225-webapp"
+  },
+  {
+    "ParameterKey": "DynamoDbTable",
+      "ParameterValue": "myTableName"
+  },
+  {
+    "ParameterKey": "DynamoDbTable1",
+      "ParameterValue": "myTableName1"
   }
   ]

@@ -164,6 +164,14 @@ Parameters:
    Description: "CODEDEPLOYAPPLICATIONNAME"
    Type: "String"
    Default: "csye6225-webapp"
+ DynamoDbTable:
+   Description: "DynamoDbTable"
+   Type: "String"
+   Default: "myTableName"
+ DynamoDbTable1:
+   Description: "DynamoDbTable"
+   Type: "String"
+   Default: "myTableName1"
 
 Resources:
 
@@ -533,21 +541,19 @@ Resources:
      RoleName:
        Fn::Sub: lambda-role
      AssumeRolePolicyDocument:
-       Version: "2012-10-17"
        Statement:
-         - Effect: Allow
+         - Action:
+             - sts:AssumeRole
+           Effect: Allow
            Principal:
              Service:
                - lambda.amazonaws.com
-           Action:
-             - sts:AssumeRole
+       Version: "2012-10-17"
      ManagedPolicyArns:
        - arn:aws:iam::aws:policy/AWSLambdaExecute
        - arn:aws:iam::aws:policy/AmazonS3FullAccess
        - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-
   
-
 
 #####################################
 # IAM Policy config                 #
@@ -687,10 +693,20 @@ Resources:
            Action:
            - 'logs:CreateLogStream'
            - 'logs:PutLogEvents'
+           - 'logs:DescribeLogStreams'
            Resource:
            - 'arn:aws:logs:us-east-1:487291657422:log-group:/aws/lambda/csye6225-lambda-function:*'
+         - Effect: Allow
+           Action:
+             - 'ses:VerifyEmailAddress'
+             - 'ses:SendEmail'
+             - 'ses:SendRawEmail'
+           Sid: "LambdaSESAccess"
+           Resource:
+             - '*'
      Roles:
        - !Ref AWSLambdaIAMRole
+
 
  
 #####################################
@@ -997,6 +1013,89 @@ Resources:
      Roles:
        - !Ref IAMRole
 
+#####################################
+# DynamoDB Policy    #
+#####################################
+
+ DynamoDBPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: DynamoDBPolicy
+     PolicyDocument:
+       Version: "2012-10-17"
+       Statement:
+         - Effect: Allow
+           Action: 
+           - 'dynamodb:Query'
+           - 'dynamodb:List*'
+           - 'dynamodb:DescribeReservedCapacity*'
+           - 'dynamodb:DescribeLimits'
+           - 'dynamodb:DescribeTimeToLive'
+           Resource: "*"
+         - Effect: Allow
+           Action: 
+           - 'dynamodb:BatchGet*'
+           - 'dynamodb:DescribeStream'
+           - 'dynamodb:DescribeTable'
+           - 'dynamodb:Get*'
+           - 'dynamodb:GetItem'
+           - 'dynamodb:Scan'
+           - 'dynamodb:CreateTable'
+           - 'dynamodb:DeleteItem'
+           - 'dynamodb:Update*'
+           - 'dynamodb:PutItem'
+           Resource: "arn:aws:dynamodb:*:*:table/myTableName"
+     Roles:
+       - !Ref IAMRole
+
+#####################################
+# Lambda Policy    #
+#####################################
+
+ LambdaUploadToS3IAMPolicy:
+   Type: 'AWS::IAM::Policy'
+   Properties:
+     PolicyName: AWSLambdaBasicSESExecutionRole
+     PolicyDocument:
+       Version: '2012-10-17'
+       Statement:
+         - Effect: Allow
+           Action:
+           - 'logs:CreateLogGroup'
+           Resource:
+           - 'arn:aws:logs:us-east-1:487291657422:*'
+         - Effect: Allow
+           Action:
+           - 'logs:CreateLogStream'
+           - 'logs:PutLogEvents'
+           - 'logs:DescribeLogStreams'
+           Resource:
+           - 'arn:aws:logs:us-east-1:487291657422:log-group:/aws/lambda/csye6225-lambda-function:*'
+         - Effect: Allow
+           Action:
+             - 'ses:VerifyEmailAddress'
+             - 'ses:SendEmail'
+             - 'ses:SendRawEmail'
+           Sid: "LambdaSESAccess"
+           Resource:
+              - '*'
+         - Effect: Allow
+           Action:
+             - 'dynamodb:BatchGet*'
+             - 'dynamodb:DescribeStream'
+             - 'dynamodb:DescribeTable'
+             - 'dynamodb:Get*'
+             - 'dynamodb:DeleteItem'
+             - 'dynamodb:Scan'
+             - 'dynamodb:UpdateItem'
+             - 'dynamodb:PutItem'
+             - 'dynamodb:GetItem'
+           Resource:
+             - !Sub 'arn:aws:dynamodb:${GHRegion}:${GHAccount}:table/${DynamoDbTable}'
+             - !Sub 'arn:aws:dynamodb:${GHRegion}:${GHAccount}:table/${DynamoDbTable1}'
+     Roles:
+       - !Ref AWSLambdaIAMRole
+
 
 
 #####################################
@@ -1006,36 +1105,78 @@ Resources:
  AWSLambda:
    Type: AWS::Lambda::Function
    Properties:
-     Runtime: nodejs14.x
+     Code:
+       S3Bucket : lambda.demo.polepeddiaravind.me
+       S3Key: serverless.zip
+     Description: csye6225-lambda-function
+     FunctionName: csye6225-lambda-function
+     Handler: ./serverless/src/index.handler
      Role: 
        Fn::GetAtt:
          - AWSLambdaIAMRole
          - Arn
-     Handler: index.handler
-     Code:
-       ZipFile: |
-         var aws = require('aws-sdk')
-         var response = require('cfn-response')
-         exports.handler = function(event, context) {
-             console.log("REQUEST RECEIVED:\n" + JSON.stringify(event))
-             // For Delete requests, immediately send a SUCCESS response.
-             if (event.RequestType == "Delete") {
-                 response.send(event, context, "SUCCESS")
-                 return
-             }
-         }
-     Description: Invoke a function during stack creation.
-     FunctionName: csye6225-lambda-function
-     TracingConfig:
-       Mode: Active
+     Runtime: nodejs14.x
 
  LambdaInvokePermission:
    Type: AWS::Lambda::Permission
    Properties:
-     FunctionName: arn:aws:lambda:us-east-1:487291657422:function:csye6225-lambda-function
      Action: lambda:InvokeFunction
      Principal: sns.amazonaws.com
      SourceArn: !Ref MySNSTopic
+     FunctionName: arn:aws:lambda:us-east-1:487291657422:function:csye6225-lambda-function
+
+
+
+
+#####################################
+# DynamoDB    #
+#####################################
+
+
+ myDynamoDBTable: 
+   Type: AWS::DynamoDB::Table
+   Properties: 
+     TableName: "myTableName"
+     AttributeDefinitions: 
+       - 
+         AttributeName: "Token"
+         AttributeType: "S"
+     KeySchema: 
+       - 
+         AttributeName: "Token"
+         KeyType: "HASH"
+     ProvisionedThroughput: 
+       ReadCapacityUnits: "5"
+       WriteCapacityUnits: "5"
+     TimeToLiveSpecification: 
+       AttributeName: "ExpireToken"
+       Enabled: true
+   DependsOn:
+     - DynamoDBPolicy
+
+ myDynamoDBTable1: 
+   Type: AWS::DynamoDB::Table
+   Properties: 
+     TableName: "myTableName1"
+     AttributeDefinitions: 
+       - 
+         AttributeName: "Email"
+         AttributeType: "S"
+     KeySchema: 
+       - 
+         AttributeName: "Email"
+         KeyType: "HASH"
+     ProvisionedThroughput: 
+       ReadCapacityUnits: "5"
+       WriteCapacityUnits: "5"
+     TimeToLiveSpecification: 
+       AttributeName: "ExpireToken"
+       Enabled: true
+   DependsOn:
+     - DynamoDBPolicy
+
+  
+
 
 
 
