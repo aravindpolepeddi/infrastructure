@@ -551,8 +551,7 @@ Resources:
        Version: "2012-10-17"
      ManagedPolicyArns:
        - arn:aws:iam::aws:policy/AWSLambdaExecute
-       - arn:aws:iam::aws:policy/AmazonS3FullAccess
-       - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+
   
 
 #####################################
@@ -716,6 +715,20 @@ Resources:
            Sid: "LambdaSESAccess"
            Resource:
              - '*'
+         - Effect: Allow
+           Action:
+             - 'dynamodb:BatchGet*'
+             - 'dynamodb:DescribeStream'
+             - 'dynamodb:DescribeTable'
+             - 'dynamodb:Get*'
+             - 'dynamodb:DeleteItem'
+             - 'dynamodb:Scan'
+             - 'dynamodb:UpdateItem'
+             - 'dynamodb:PutItem'
+             - 'dynamodb:GetItem'
+           Resource:
+             - !Sub 'arn:aws:dynamodb:${GHRegion}:${GHAccount}:table/${DynamoDbTable}'
+             - !Sub 'arn:aws:dynamodb:${GHRegion}:${GHAccount}:table/${DynamoDbTable1}'
      Roles:
        - !Ref AWSLambdaIAMRole
 
@@ -1181,9 +1194,6 @@ Resources:
      ProvisionedThroughput: 
        ReadCapacityUnits: "5"
        WriteCapacityUnits: "5"
-     TimeToLiveSpecification: 
-       AttributeName: "ExpireToken"
-       Enabled: true
    DependsOn:
      - DynamoDBPolicy
 
