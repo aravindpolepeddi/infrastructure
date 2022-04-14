@@ -17,7 +17,7 @@
   },
   {
         "ParameterKey": "AMI",
-          "ParameterValue": "ami-0e551efbdc3c09124"
+          "ParameterValue": "ami-0ca2e81b14b46d432"
   },
   {
         "ParameterKey": "Env",
@@ -158,5 +158,13 @@
   {
     "ParameterKey": "CODEDEPLOYAPPLICATIONNAME",
       "ParameterValue": "csye6225-webapp"
+  },
+  {
+    "ParameterKey": "DynamoDbTable",
+      "ParameterValue": "myTableName"
+  },
+  {
+    "ParameterKey": "DynamoDbTable1",
+      "ParameterValue": "myTableName1"
   }
   ]
