@@ -103,11 +103,11 @@ Parameters:
  HTTPProtocol:
    Description: "HTTPProtocol"
    Type: "String"
-   Default: "HTTP"
+   Default: "HTTPS"
  HTTPPort:
    Description: "HTTPPort"
    Type: "String"
-   Default: "80"
+   Default: "443"
  MaxSize:
    Description: "MaxSize"
    Type: "String"
@@ -417,6 +417,10 @@ Resources:
       - IpProtocol: -1
         FromPort: 0
         ToPort: 0
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
         CidrIp: 0.0.0.0/0
       Tags:
        - Key: Name
@@ -765,6 +769,9 @@ Resources:
            VolumeSize: !Ref BlockDeviceSize
            VolumeType: !Ref BlockDeviceType
            DeleteOnTermination: true
+           Encrypted: true
+           DeleteOnTermination: true
+           KmsKeyId: !GetAtt MyKey.Arn
        ImageId: !Ref AMI
        #IamInstanceProfile: !Ref MyInstanceProfile
        IamInstanceProfile:
@@ -926,13 +933,13 @@ Resources:
      HealthCheckIntervalSeconds: !Ref HealthCheckInterval
      HealthCheckPath: !Ref LoadEndPoint
      HealthCheckPort: !Ref AppPort
-     HealthCheckProtocol: !Ref HTTPProtocol
+     HealthCheckProtocol: HTTP
      HealthCheckTimeoutSeconds: !Ref CooldownPeriod
      HealthyThresholdCount: !Ref ThresholdCount
      IpAddressType: !Ref IpAddressType
      Name: !Sub ${AWS::StackName}-lb-tg
      Port: !Ref AppPort
-     Protocol: !Ref HTTPProtocol
+     Protocol: HTTP
      Tags:
        - Key: Name
          Value: !Sub ${AWS::StackName}-lb-tg
@@ -950,6 +957,8 @@ Resources:
  loadBalancerListener:
    Type: AWS::ElasticLoadBalancingV2::Listener
    Properties:
+     Certificates:
+       - CertificateArn: arn:aws:acm:us-east-1:487291657422:certificate/fe2aa329-952c-421c-a51c-0156c77e6fd7
      DefaultActions:
        - Type: forward
          TargetGroupArn: !Ref loadBalancerTargetGroup
@@ -1135,7 +1144,7 @@ Resources:
        S3Key: serverless.zip
      Description: csye6225-lambda-function
      FunctionName: csye6225-lambda-function
-     Handler: ./serverless/src/index.handler
+     Handler: ./src/index.handler
      Role: 
        Fn::GetAtt:
          - AWSLambdaIAMRole
@@ -1198,6 +1207,80 @@ Resources:
      - DynamoDBPolicy
 
   
+#####################################
+# ElasticLoadBalancer ListenerCertificate   #
+#####################################
+
+
+ MyKey:
+    Type: AWS::KMS::Key
+    Properties:
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-rds
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Action:
+              - "kms:*"
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::487291657422:root
+            Resource:
+              - '*'
+          - Sid: Allow administration of the key
+            Effect: Allow
+            Action:
+              - "kms:Create*"
+              - "kms:Enable*"
+              - "kms:Describe*"
+              - "kms:List*"
+              - "kms:Put*"
+              - "kms:Update*"
+              - "kms:Revoke*"
+              - "kms:Disable*"
+              - "kms:Get*"
+              - "kms:Delete*"
+              - "kms:TagResource"
+              - "kms:UntagResource"
+              - "kms:ScheduleKeyDeletion"
+              - "kms:CancelKeyDeletion"
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::487291657422:user/awscli
+                - !Sub arn:aws:iam::487291657422:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling
+            Resource:
+              - '*'
+          - Sid: Allow use of the key
+            Effect: Allow
+            Action:
+             - 'kms:DescribeKey'
+             - 'kms:Encrypt'
+             - 'kms:Decrypt'
+             - 'kms:ReEncrypt*'
+             - 'kms:GenerateDataKey'
+             - 'kms:GenerateDataKeyWithoutPlaintext'
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::487291657422:user/awscli
+                - !Sub arn:aws:iam::487291657422:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling
+                - !Sub arn:aws:iam::487291657422:root
+            Resource:
+              - '*'
+          - Sid: Grant Permission
+            Effect: Allow
+            Action:
+              - "kms:CreateGrant"
+              - "kms:ListGrants"
+              - "kms:RevokeGrant"
+            Principal:
+              AWS:
+                - !Sub arn:aws:iam::487291657422:user/awscli
+                - !Sub arn:aws:iam::487291657422:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling
+                - !Sub arn:aws:iam::487291657422:root
+            Resource:
+              - '*'
+            Condition: {"Bool": {"kms:GrantIsForAWSResource": "true"}}
 
 
 
