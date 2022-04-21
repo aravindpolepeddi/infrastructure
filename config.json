@@ -17,7 +17,7 @@
   },
   {
         "ParameterKey": "AMI",
-          "ParameterValue": "ami-0ca2e81b14b46d432"
+          "ParameterValue": "ami-0d2a88f9af0f86fd2"
   },
   {
         "ParameterKey": "Env",
@@ -33,7 +33,7 @@
   },
   {
         "ParameterKey": "InstanceClass",
-          "ParameterValue": "db.t2.micro"
+          "ParameterValue": "db.t3.micro"
   },
   {
         "ParameterKey": "AZDeployment",
@@ -97,19 +97,19 @@
   },
   {
     "ParameterKey": "HTTPProtocol",
-      "ParameterValue": "HTTP"
+      "ParameterValue": "HTTPS"
   },
   {
     "ParameterKey": "HTTPPort",
-      "ParameterValue": "80"
+      "ParameterValue": "443"
   },
   {
     "ParameterKey": "MaxSize",
-      "ParameterValue": "5"
+      "ParameterValue": "1"
   },
   {
     "ParameterKey": "MinSize",
-      "ParameterValue": "3"
+      "ParameterValue": "1"
   },
   {
     "ParameterKey": "CooldownPeriod",
