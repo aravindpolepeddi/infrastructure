@@ -22,3 +22,8 @@ aws cloudformation delete-stack --stack-name <stack_name>
 
 aws --profile=dev ec2 describe-vpcs //aws ec2 describe-vpcs --filters Name=Name,Values=dev
 
+# to upload cert
+$ aws acm import-certificate --certificate file://Certificate.pem --certificate-chain file://CertificateChain.pem --private-key file://PrivateKey.pem --profile=demo 
+
+aws acm import-certificate --certificate fileb://prod_polepeddiaravind.me/prod_polepeddiaravind_me.crt --certificate-chain fileb://prod_polepeddiaravind.me/prod_polepeddiaravind_me.ca-bundle --private-key fileb://prod_polepeddiaravind.me/private.key
+
